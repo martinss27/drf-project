@@ -1,0 +1,17 @@
+# Ignorar ambiente virtual
+venv/
+
+# Arquivos de cache do Python
+__pycache__/
+*.pyc
+
+# Arquivos de log
+*.log
+
+# Arquivos de configuração do IDE (VSCode, PyCharm, etc)
+.vscode/
+.idea/
+
+# Arquivos do sistema (Windows, Mac)
+.DS_Store
+Thumbs.db
