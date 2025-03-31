@@ -1,12 +1,11 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics
 
-# Create your views here.
+from .models import Product
+from .serializers import ProductSerializer
 
-@api_view(['POST'])
-def product_create(request):
-    data = request.data
-    print(data)
-    return Response(data, status=status.HTTP_201_CREATED)
+class ProductDetailAPIView(generics.RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    #lookup_field = 'pk' 
+
+product_detail_view = ProductDetailAPIView.as_view()
