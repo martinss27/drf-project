@@ -8,5 +8,4 @@ data = {
 }
 
 response = requests.put(endpoint, json=data)
-
 print(response.json()) 

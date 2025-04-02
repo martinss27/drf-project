@@ -36,11 +36,23 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
     lookup_field = 'pk' 
 
     def perform_update(self, serializer):
-        instance = serializer.save()
-        if not instance.content:
-            instance.content = instance.title
-
+        instance = serializer.save() #Save the changes and return the updated object.
+        if not instance.content: #Check if the value is falsy; besides None, verify if it is "", False, 0, or []. This makes it more comprehensive and covers all fields.
+            instance.content = instance.title #After checking if `content` is empty, if it is, assign the value of `title` to `content`.
+            instance.save() #Since the `content` check happens after the save, I need to save again to persist the change.
+            
 product_update_view = ProductUpdateAPIView.as_view()
+
+class ProductDestroyAPIView(generics.DestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'pk'
+
+    def perform_destroy(self,instance):
+        #instance
+        super().perform_destroy(instance)
+
+product_destroy_view = ProductDestroyAPIView.as_view()
 
 
 @api_view(['GET', 'POST'])
@@ -51,7 +63,7 @@ def product_alt_view(request, pk=None, *args, **kwargs):
         if pk is not None:
             #detail view
             obj = get_object_or_404(Product, pk=pk) #Look for the product by ID; if not found, return 404.
-            data = ProductSerializer(obj, many=False).data #Convert only this specific product to JSON, passing in that object with `many=False` (which is the default, so we don’t need to declare it).
+            data = ProductSerializer(obj, many=False).data #Convert only this specific product to JSON, passing in that object with `many=False` (which is the default, so we don't need to declare it).
             return Response(data) #then we return the data
         #list view
         #And if there is no `pk`, it means we want all products.
