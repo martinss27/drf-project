@@ -30,6 +30,18 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
 
 product_detail_view = ProductDetailAPIView.as_view()
 
+class ProductUpdateAPIView(generics.UpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = 'pk' 
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        if not instance.content:
+            instance.content = instance.title
+
+product_update_view = ProductUpdateAPIView.as_view()
+
 
 @api_view(['GET', 'POST'])
 def product_alt_view(request, pk=None, *args, **kwargs):
@@ -67,3 +79,4 @@ For example, lines 51, 52, 58, and 59 are the same as lines 13, 14, 18, and 19 i
 From lines 51 to 57, we can see that the code is the same as lines 17 to 21.  
 
 In other words, for the POST method, we reused some lines of code from other places to save time and reduce redundancy.'''
+
