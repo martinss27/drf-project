@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, mixins
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -40,7 +40,7 @@ class ProductUpdateAPIView(generics.UpdateAPIView):
         if not instance.content: #Check if the value is falsy; besides None, verify if it is "", False, 0, or []. This makes it more comprehensive and covers all fields.
             instance.content = instance.title #After checking if `content` is empty, if it is, assign the value of `title` to `content`.
             instance.save() #Since the `content` check happens after the save, I need to save again to persist the change.
-            
+
 product_update_view = ProductUpdateAPIView.as_view()
 
 class ProductDestroyAPIView(generics.DestroyAPIView):
@@ -48,12 +48,34 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
     serializer_class = ProductSerializer
     lookup_field = 'pk'
 
-    def perform_destroy(self,instance):
-        #instance
-        super().perform_destroy(instance)
+    def perform_destroy(self,instance): #recebe um parametro instance, que é o obj que será destruido
+        #perform destroy é como um gancho, que o framework fornece para que eu possa fazer coisas antes da deleção real acontecer
+        super().perform_destroy(instance) #chama  perform_destroy da classe pai (através de super()) para execultar o DELETE real do obj
+        '''se nao chamasse super().perform_destroy(instance) o obj nunca seria realmente deletado
+        porque estaria sobrescrevendo o método sem executar a parte que realmente deleta'''
+
 
 product_destroy_view = ProductDestroyAPIView.as_view()
 
+class ProductMixinView(
+    mixins.ListModelMixin, #Allows listing all objects os objetos 
+    mixins.RetrieveModelMixin, #Allows retrieving a specific object
+    generics.GenericAPIView): #Allows using the list and retrieve methods
+
+    queryset = Product.objects.all() #Queryset is the set of objects that will be listed or retrieved   
+    serializer_class = ProductSerializer #`serializer_class` is the serializer that will be used to convert objects into JSON
+    lookup_field = 'pk' #`lookup_field` is the field that will be used to retrieve a specific object (if applicable)
+
+    def get(self,request, *args, **kwargs): #HTTP GET is the method that will be used to retrieve the objects
+        print(args, kwargs) #Prints the arguments passed to the method
+        pk = kwargs.get("pk") #Gets the `pk` from the URL
+        if pk is not None: #Checks if `pk` exists in `kwargs` (a dictionary `{}`); if `pk` is not `None`, calls the `retrieve` method
+            return self.retrieve(request, *args, **kwargs) #Calls the `retrieve` method
+        return self.list(request, *args, **kwargs) #This `return` acts as an 'else' for the 'if', meaning that if there is no `pk`, it calls `self.list` and lists all products
+    '''URL: `api/products/` → `kwargs` is `{}` (without `pk`), so it calls the `list` method.  
+       URL: `api/products/1/` → `kwargs` is `{'pk': 1}` (with `pk`), so it calls the `retrieve` method.'''
+    
+product_mixin_view = ProductMixinView.as_view()
 
 @api_view(['GET', 'POST'])
 def product_alt_view(request, pk=None, *args, **kwargs):
