@@ -59,6 +59,7 @@ product_destroy_view = ProductDestroyAPIView.as_view()
 
 class ProductMixinView(
     mixins.ListModelMixin, #Allows listing all objects os objetos 
+    mixins.CreateModelMixin, #Allows creating a new object
     mixins.RetrieveModelMixin, #Allows retrieving a specific object
     generics.GenericAPIView): #Allows using the list and retrieve methods
 
@@ -75,6 +76,17 @@ class ProductMixinView(
     '''URL: `api/products/` → `kwargs` is `{}` (without `pk`), so it calls the `list` method.  
        URL: `api/products/1/` → `kwargs` is `{'pk': 1}` (with `pk`), so it calls the `retrieve` method.'''
     
+    def post(self,request, *args, **kwargs): #HTTP POST is the method that will be used to create a new object
+        return self.create(request, *args, **kwargs) #Calls the `create` method
+    
+    def perform_create(self, serializer): #This method is called when the `create` method is called
+        #serializer.save(user=self.request.user)
+        title = serializer.validated_data.get('title') #Gets the `title` from the validated data
+        content = serializer.validated_data.get('content') or None  #Gets the `content` from the validated data
+        if content is None:
+            content = 'this is a single view doing cool stuff' #If `content` is `None`, assign the value of `title` to `content`
+        serializer.save(content=content) #Saves the `content` to the database   
+
 product_mixin_view = ProductMixinView.as_view()
 
 @api_view(['GET', 'POST'])
