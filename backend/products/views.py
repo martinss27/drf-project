@@ -58,6 +58,7 @@ class ProductDestroyAPIView(generics.DestroyAPIView):
 product_destroy_view = ProductDestroyAPIView.as_view()
 
 class ProductMixinView(
+    mixins.DestroyModelMixin, #Allows deleting a specific object
     mixins.ListModelMixin, #Allows listing all objects os objetos 
     mixins.CreateModelMixin, #Allows creating a new object
     mixins.UpdateModelMixin, #Allows updating a specific object
@@ -94,6 +95,13 @@ class ProductMixinView(
         if not instance.content: #Check if the value is falsy; besides None, verify if it is "", False, 0, or []. This makes it more comprehensive and covers all fields.
             instance.content = instance.title #After checking if `content` is empty, if it is, assign the value of `title` to `content`.
             instance.save() #Since the `content` check happens after the save, I need to save again to persist the change.
+
+    
+    def delete(self,request, *args, **kwargs): #HTTP DELETE is the method that will be used to delete an object
+        return self.destroy(request, *args, **kwargs) #Calls the `destroy` method
+    
+    def perform_destroy(self, instance): #This method is called when the `destroy` method is called
+        super().perform_destroy(instance) #Calls the `destroy` method of the parent class
 
 
 product_mixin_view = ProductMixinView.as_view()
