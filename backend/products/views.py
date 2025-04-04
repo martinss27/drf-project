@@ -1,4 +1,4 @@
-from rest_framework import generics, mixins
+from rest_framework import generics, mixins, permissions, authentication
 
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -11,6 +11,11 @@ from .serializers import ProductSerializer
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [authentication.SessionAuthentication]
+
+    '''then i need to create a superuser to test the authentication'''
 
     def perform_create(self, serializer):
         #serializer.save(user=self.request.user)
@@ -101,7 +106,12 @@ class ProductMixinView(
         return self.destroy(request, *args, **kwargs) #Calls the `destroy` method
     
     def perform_destroy(self, instance): #This method is called when the `destroy` method is called
+        # Here you could add custom logic before the deletion
+        # For example, logging the action or sending a notification
+        print(f"Produto {instance.title} será deletado")
         super().perform_destroy(instance) #Calls the `destroy` method of the parent class
+        # Here you could add custom logic after the deletion
+        print("Produto deletado com sucesso")
 
 
 product_mixin_view = ProductMixinView.as_view()
