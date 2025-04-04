@@ -60,6 +60,7 @@ product_destroy_view = ProductDestroyAPIView.as_view()
 class ProductMixinView(
     mixins.ListModelMixin, #Allows listing all objects os objetos 
     mixins.CreateModelMixin, #Allows creating a new object
+    mixins.UpdateModelMixin, #Allows updating a specific object
     mixins.RetrieveModelMixin, #Allows retrieving a specific object
     generics.GenericAPIView): #Allows using the list and retrieve methods
 
@@ -80,12 +81,20 @@ class ProductMixinView(
         return self.create(request, *args, **kwargs) #Calls the `create` method
     
     def perform_create(self, serializer): #This method is called when the `create` method is called
-        #serializer.save(user=self.request.user)
-        title = serializer.validated_data.get('title') #Gets the `title` from the validated data
         content = serializer.validated_data.get('content') or None  #Gets the `content` from the validated data
         if content is None:
             content = 'this is a single view doing cool stuff' #If `content` is `None`, assign the value of `title` to `content`
         serializer.save(content=content) #Saves the `content` to the database   
+
+    def update(self,request, *args, **kwargs): #HTTP PUT is the method that will be used to update an object
+        return self.partial_update(request, *args, **kwargs) #Calls the `partial_update` method
+    
+    def perform_update(self, serializer):
+        instance = serializer.save() #Save the changes and return the updated object.
+        if not instance.content: #Check if the value is falsy; besides None, verify if it is "", False, 0, or []. This makes it more comprehensive and covers all fields.
+            instance.content = instance.title #After checking if `content` is empty, if it is, assign the value of `title` to `content`.
+            instance.save() #Since the `content` check happens after the save, I need to save again to persist the change.
+
 
 product_mixin_view = ProductMixinView.as_view()
 
