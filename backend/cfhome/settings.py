@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'products',
-    'rest_framework'
+    'rest_framework',
+    'rest_framework.authtoken' #this will ad a new table/aba on our api called "AUTH TOKEN"(main aba) -> Tokens (sub-aba)
 ]
 
 MIDDLEWARE = [
