@@ -6,13 +6,14 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 
 from .models import Product
+from .permissions import IsStaffEditorPermission
 from .serializers import ProductSerializer
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
     authentication_classes = [authentication.SessionAuthentication]
 
     '''then i need to create a superuser to test the authentication'''
