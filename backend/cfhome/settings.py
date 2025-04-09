@@ -125,3 +125,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        'rest_framework.authentication.SessionAuthentication', # ID generation system per session (while the session remains valid (does not expire or the user does not log out), the user can navigate through the API).
+        'api.authentication.TokenAuthentication' # To make use of bearer, importing from api > authentication
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        'rest_framework.authentication.IsAuthenticatedOrReadOnly' #This allows, by default, the unauthenticated user to only perform the GET (read) process while unauthenticated.
+    ]
+}

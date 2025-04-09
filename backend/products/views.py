@@ -15,9 +15,9 @@ class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    authentication_classes = [
-        authentication.SessionAuthentication, 
-        TokenAuthentication] #this will authenticate the user using the token
+    #authentication_classes = [
+    #    authentication.SessionAuthentication, 
+    #    TokenAuthentication,] #this will authenticate the user using the token
     permission_classes = [permissions.IsAdminUser, IsStaffEditorPermission]
 
     '''then i need to create a superuser to test the authentication'''
