@@ -12,8 +12,9 @@ print(auth_response.json()) #this will print the response from the server
 if auth_response.status_code == 200: #heck if the auth_response was successful.
     token = auth_response.json()['token'] #Capture the token generated if the user is authenticated
     headers = {
-        "Authorization": f'Token {token}' #Include the token in the request headers
+        "Authorization": f'Bearer {token}' #Include the token in the request headers
     }
+
 
     endpoint = "http://localhost:8000/api/products/"
 
