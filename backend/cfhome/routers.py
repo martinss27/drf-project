@@ -1,9 +1,9 @@
 from rest_framework.routers import DefaultRouter
 
-from products.viewsets import ProductViewSet
+from products.viewsets import ProductGenericViewSet
 
 router = DefaultRouter()
-router.register('products-v2', ProductViewSet, basename='products-v2')
+router.register('products-v2', ProductGenericViewSet, basename='products-v2')
 
 
 print(router.urls)
