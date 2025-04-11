@@ -128,11 +128,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
 
-    "DEFAULT_AUTHENTICATION_CLASSES": [
+    "DEFAULT_AUTHENTICATION_CLASSES": [ #Defines the authentication methods that DRF will attempt to use to identify the user in all requests. (global pattern)
         'rest_framework.authentication.SessionAuthentication', # ID generation system per session (while the session remains valid (does not expire or the user does not log out), the user can navigate through the API).
-        'api.authentication.TokenAuthentication' # To make use of bearer, importing from api > authentication
+        'api.authentication.TokenAuthentication' # ustom token-based authentication using 'Bearer <token>' in the Authorization header to identify the user. Imported from api > authentication
     ],
-    "DEFAULT_PERMISSION_CLASSES": [
-        'rest_framework.authentication.IsAuthenticatedOrReadOnly' #This allows, by default, the unauthenticated user to only perform the GET (read) process while unauthenticated.
-    ]
+    "DEFAULT_PERMISSION_CLASSES": [ #This key defines the default permissions applied to all views. It determines who can access a view after authentication has been verified. (global pattern)
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly'] #Authenticated users can perform any operation (CRUD), while unauthenticated users can only perform GET.
 }
