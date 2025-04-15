@@ -3,10 +3,8 @@ from rest_framework.routers import DefaultRouter
 from products.viewsets import ProductGenericViewSet
 
 router = DefaultRouter()
-router.register('products-v2', ProductGenericViewSet, basename='products-v2')
+router.register('products', ProductGenericViewSet, basename='products')
 
-
-print(router.urls)
 urlpatterns = router.urls
 
 '''This part using the default router was just to make it work with the viewset, 
