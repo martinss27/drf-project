@@ -28,11 +28,11 @@ class ProductListCreateAPIView(StaffEditorPermissionMixin,
 
 product_list_create_view = ProductListCreateAPIView.as_view()
 
-class ProductDetailAPIView(StaffEditorPermissionMixin,
-                           generics.RetrieveAPIView):
-    
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
+class ProductDetailAPIView(
+            StaffEditorPermissionMixin,
+            generics.RetrieveAPIView):
+            queryset = Product.objects.all()
+            serializer_class = ProductSerializer
     #lookup_field = 'pk' 
 
 product_detail_view = ProductDetailAPIView.as_view()

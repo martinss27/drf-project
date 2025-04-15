@@ -5,12 +5,19 @@ from .models import Product
 
 class ProductSerializer(serializers.ModelSerializer):
     my_discount = serializers.SerializerMethodField(read_only=True)
-    url = serializers.SerializerMethodField(read_only=True)
+    edit_url = serializers.SerializerMethodField(read_only=True)
+    url = serializers.HyperlinkedIdentityField(
+        view_name='product-detail',
+        lookup_field= 'pk'
+        )
+    delete_url = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Product
         fields = [
+            'delete_url',
             'url',
+            'edit_url',
             'pk',
             'title',
             'content',
@@ -18,14 +25,22 @@ class ProductSerializer(serializers.ModelSerializer):
             'my_discount'
         ]
 
-    def get_url(self,obj): #Method automatically called by DRF to generate the value of the url field (due to SerializerMethodField). (self = serializer), (obj = instance of the Product model being serialized at the moment).
+    def get_edit_url(self,obj): #Method automatically called by DRF to generate the value of the url field (due to SerializerMethodField). (self = serializer), (obj = instance of the Product model being serialized at the moment).
         request = self.context.get('request') #self.context is a dictionary that handles information outside the model (in this case, the request, which is not part of the Product model). //////// hosturlpart   /normal part
                                               #In this case, the reverse function needs to be called with the request to return the full URL (including the host domain)                     http://localhost:8000/api/products/5/
 
         
         if request is None: #Just a safety check — if request is None, it returns None to avoid an error
             return None
-        return reverse("product-detail", kwargs={"pk": obj.pk}, request=request)
+        return reverse("product-edit", kwargs={"pk": obj.pk}, request=request)
+# reverse params   |viewname(from urls.py)| #keyword args (obj.pk) | 
+
+    def get_delete_url(self,obj):
+        x = self.context.get('request')
+
+        if x is None:
+            return None
+        return reverse('product-delete', kwargs={"pk": obj.id}, request=x)
         '''
         ⬆️ Here I used reverse to generate the URL corresponding to the view (in this case, product-detail). 
         The kwargs argument is used to fill in the <int:pk> part of the URL — that is, the product ID (by default, the URL would look like: /api/products/5/). 
